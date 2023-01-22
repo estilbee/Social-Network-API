@@ -1,9 +1,10 @@
 const {Schema,model} = require('mongoose');
+const Reactions = require('./Reaction');
 
 const thoughtSchema = new Schema({
     thoughtText: {type: String, required: true, minlength:1, maxlength: 280}, 
     createdAt: {type: Date, default: Date.now, get: time=> new Date(time).toLocaleString()}, //part of the javaScript date constructor 
-    reactions: []//Array of nested documents created with the reactionSchema
+    reactions: [Reactions]//Array of nested documents created with the reactionSchema
 },
 {
     toJSON: {
