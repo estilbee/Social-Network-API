@@ -1,16 +1,16 @@
-const {Thoughts} = require ('../../Models/Thoughts');
+const {Thoughts} = require ('../Models/Thoughts');
 
 
 module.exports = {
 //this gets all of the thoughts 
 getThoughts(req, res){
     Thoughts.find()
-    .then(async (thoughts) => {
-        const userObj = {
-            thoughts,
-            reactions: await reactions(),
-        }
-        return res.json(userObj);
+    .then(async (thoughtsObj) => {
+        // const userObj = {
+        //     thoughts,
+        //     reactions: await reactions(),
+        // }
+        return res.json(thoughtsObj);
     })
     .catch((err) => {
         console.log(err);
@@ -24,10 +24,8 @@ getSingleThought(req,res){
     .then(async (thoughts) => 
         !thoughts
         ? res.status(404).json({message: 'No user with that ID'})
-        : res.json({
-            thoughts,
-            reactions: await reactions(req.params.thoughtId),
-        })
+        : res.json(thoughts)
+            // reactions: await reactions(req.params.thoughtId),
     )  
     .catch((err) => {
         console.log(err);

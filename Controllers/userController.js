@@ -1,15 +1,15 @@
-const {User} = require ('../../Models/User');
+const {User} = require ('../Models');
 
 
 module.exports = {
 //this gets all of the users 
 getUsers(req, res){
     User.find()
-    .then(async (users) => {
-        const userObj = {
-            users,
-            thoughts: await thoughts(),
-        }
+    .then(async (userObj) => {
+        // const userObj = {
+        //     users,
+        //     thoughts: await thoughts(),
+        // }
         return res.json(userObj);
     })
     .catch((err) => {
@@ -21,14 +21,11 @@ getUsers(req, res){
 //finds a single user by their ID
 getSingleUser(req,res){
     User.findOne({_id: req.params.userId})
-    .select('-__v') //what does this line do? - when you create a collection/table it adds a version # to it
     .then(async (user) => 
         !user
         ? res.status(404).json({message: 'No user with that ID'})
-        : res.json({
-            user,
-            thoughts: await thoughts(req.params.userId),
-        })
+        : res.json(user)
+            // thoughts: await thoughts(req.params.userId),
     )  
     .catch((err) => {
         console.log(err);
