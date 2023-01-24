@@ -21,7 +21,7 @@ getUsers(req, res){
 //finds a single user by their ID
 getSingleUser(req,res){
     User.findOne({_id: req.params.userId})
-    .select('-__v') //what does this line do? 
+    .select('-__v') //what does this line do? - when you create a collection/table it adds a version # to it
     .then(async (user) => 
         !user
         ? res.status(404).json({message: 'No user with that ID'})
@@ -59,7 +59,7 @@ deleteUser(req, res) {
 putUser(req, res) {
     User.findOneAndUpdate(
         {_id: req.params.userId},
-        {$addToSet: {thoughts: req.body}},
+        {$set: req.body},
         {new: true }
     )
     .then((user) => 
@@ -68,7 +68,34 @@ putUser(req, res) {
         : res.json(user)
     )
     .catch((err) => res.status(500).json(err));
-}
+},
 
+addFriend(req, res) {
+    User.findOneAndUpdate({ _id: req.params.userId }, { $push: { friends: req.params.friendId } }, { new: true })
+      .then((dbUserData) => {
+        if (!dbUserData) {
+          return res.status(404).json({ message: 'No user has this id' });
+        }
+        res.json(dbUserData);
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(500).json(err);
+      });
+  },
+ 
+  removeFriend(req, res) {
+    User.findOneAndUpdate({ _id: req.params.userId }, { $pull: { friends: req.params.friendId } }, { new: true })
+      .then((dbUserData) => {
+        if (!dbUserData) {
+          return res.status(404).json({ message: 'No user has this id!' });
+        }
+        res.json(dbUserData);
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(500).json(err);
+      });
+  },
 
 }
