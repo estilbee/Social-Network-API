@@ -1,4 +1,4 @@
-const {Thoughts} = require ('../Models/Thoughts');
+const {Thoughts, User} = require ('../Models'); //models/index is what its getting 
 
 
 module.exports = {
@@ -36,7 +36,24 @@ getSingleThought(req,res){
 //creates a new thought 
 createThoughts(req, res) {
     Thoughts.create(req.body)
-    .then((thoughts) => res.json(thoughts))
+    .then((thought) => {
+      
+    //add thought to user
+     
+      User.findOneAndUpdate(
+          {_id: req.body.userId},
+          {$addToSet:{thoughts: thought._id}},
+          {new: true }
+      )
+      .then((user) => 
+      !user
+          ? res.status(404).json({message:'No thought with that ID'})
+          : res.json(thought)
+      )
+      .catch((err) => res.status(500).json(err));
+      
+      
+    })
     .catch((err) => res.status(500).json(err));
 
 },
@@ -95,5 +112,6 @@ addReactions(req, res) {
         res.status(500).json(err);
       });
   },
+
 
 }
