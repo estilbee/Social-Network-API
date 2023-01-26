@@ -21,7 +21,7 @@ getThoughts(req, res){
 //finds a single thought by their ID
 getSingleThought(req,res){
     Thoughts.findOne({_id: req.params.thoughtId})
-    .then(async (thoughts) => 
+    .then ((thoughts) => 
         !thoughts
         ? res.status(404).json({message: 'No user with that ID'})
         : res.json(thoughts)
@@ -42,7 +42,7 @@ createThoughts(req, res) {
      
       User.findOneAndUpdate(
           {_id: req.body.userId},
-          {$addToSet:{thoughts: thought._id}},
+          {$push:{thoughts: thought._id}},
           {new: true }
       )
       .then((user) => 
@@ -50,11 +50,16 @@ createThoughts(req, res) {
           ? res.status(404).json({message:'No thought with that ID'})
           : res.json(thought)
       )
-      .catch((err) => res.status(500).json(err));
-      
+      .catch((err) => {
+        res.status(500).json(err)
+        console.log(err);
+      })
       
     })
-    .catch((err) => res.status(500).json(err));
+    .catch((err) => {res.status(500).json(err)
+      console.log(err);
+    })
+    ;
 
 },
 
@@ -100,7 +105,8 @@ addReactions(req, res) {
   },
  
   removeReactions(req, res) {
-    Thoughts.findOneAndUpdate({ _id: req.params.thoughtId }, { $pull: { reactions: req.params.reactionId } }, { new: true })
+    Thoughts.findOneAndUpdate({ _id: req.params.thoughtId },
+       { $pull: { reactions: req.params.reactionId } }, { new: true })
       .then((dbThoughtData) => {
         if (!dbThoughtData) {
           return res.status(404).json({ message: 'No thought has this id!' });

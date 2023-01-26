@@ -4,7 +4,7 @@ const {User} = require ('../Models');
 module.exports = {
 //this gets all of the users 
 getUsers(req, res){
-    User.find()
+    User.find().populate('thoughts')
     .then(async (userObj) => {
         // const userObj = {
         //     users,
